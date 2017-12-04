@@ -6,3 +6,4 @@ This is my project to learn programming rust from scratch using the http://adven
 - write proper tests
 - seperate solutions into separate files/modules
 - refactor out commonly used functions
+- add correct solution tests for regressions
