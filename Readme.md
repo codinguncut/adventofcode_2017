@@ -1,3 +1,3 @@
-## Getting Started
+## Advent of Code 2017
 
-- `sudo apt-get install cargo rustc`
+This is my project to learn programming rust from scratch using the http://adventofcode.com problems.
