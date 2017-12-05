@@ -1,9 +1,10 @@
 use common;
 
 // get matching characters in "s" that are "offset" apart
-fn get_same(s: String, offset: usize) -> Vec<char> {
+fn get_same(s: &str, offset: usize) -> Vec<char> {
     let t = [&s[offset..], &s[..offset]].join("");
-    s.chars().zip(t.chars())
+    s.chars()
+        .zip(t.chars())
         .filter(|&(a, b)| a == b)
         .map(|(a, _)| a)
         .collect::<Vec<_>>()
@@ -12,15 +13,13 @@ fn get_same(s: String, offset: usize) -> Vec<char> {
 
 // turn vector of characters into vector of (digit) numbers
 fn to_num(a: Vec<char>) -> Vec<u32> {
-    a
-        .iter()
-        .map(|c| c.to_digit(10)
-        .unwrap())
+    a.iter()
+        .map(|c| c.to_digit(10).unwrap())
         .collect::<Vec<_>>()
 }
 
 
-fn worker(s: String, offset: usize) -> u32 {
+fn worker(s: &str, offset: usize) -> u32 {
     to_num(get_same(s, offset))
         .iter()
         .sum()
@@ -30,9 +29,9 @@ fn worker(s: String, offset: usize) -> u32 {
 #[allow(dead_code)]
 pub fn main() {
     let input = common::read_file("data/day1.txt");
-    let offset = input.chars().count() / 2 as usize;
-    println!("day 1 - 1 {}", worker(input.to_string(), 1));
-    println!("day 1 - 2 {}", worker(input.to_string(), offset));
+    let offset = &input.chars().count() / 2 as usize;
+    println!("day 1 - 1 {}", worker(&input, 1));
+    println!("day 1 - 2 {}", worker(&input, offset));
 }
 
 
@@ -48,7 +47,7 @@ mod tests {
             ("1234", 0),
             ("91212129", 9)
         ].iter() {
-            assert_eq!(worker(sample.to_string(), 1), valid);
+            assert_eq!(worker(sample, 1), valid);
         }
     }
 
@@ -62,20 +61,20 @@ mod tests {
             ("12131415", 4),
         ].iter() {
             let offset = sample.chars().count() / 2 as usize;
-            assert_eq!(worker(sample.to_string(), offset), valid);
+            assert_eq!(worker(sample, offset), valid);
         }
     }
 
     #[test]
     fn solution1() {
         let input = common::read_file("data/day1.txt");
-        assert_eq!(worker(input.to_string(), 1), 995);
+        assert_eq!(worker(&input, 1), 995);
     }
 
     #[test]
     fn solution2() {
         let input = common::read_file("data/day1.txt");
-        let offset = input.chars().count() / 2 as usize;
-        assert_eq!(worker(input.to_string(), offset), 1130);
+        let offset = &input.chars().count() / 2 as usize;
+        assert_eq!(worker(&input, offset), 1130);
     }
 }

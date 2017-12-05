@@ -1,22 +1,49 @@
 use std::collections::HashMap;
 
+struct Point(i32, i32);
+
+impl Point {
+    // NOTE: std::ops::Sub had signature I didn't like
+    fn minus(&self, other : &Point) -> Point {
+        Point(self.0 - other.0,
+              self.1 - other.1)
+    }
+
+    fn abs(&self) -> Point {
+        Point(self.0.abs(),
+              self.1.abs())
+    }
+}
+
+
+#[allow(dead_code)]
+fn even(n: &u32) -> bool {
+    n % 2 == 0
+}
+
+
+fn odd(n: &u32) -> bool {
+    n % 2 == 1
+}
+
+
 /// calculate vector from origin to cell "input"
-fn dist_vec(input: u32) -> (i32, i32) {
+fn dist_vec(input: u32) -> Point {
     /*
     shells: 1^2, 3^2, 5^2, 7^2, ...
     we can find bottom right corners, and we know length of legs
     total manhatten distance is number of shells + perpendicular offset
     */
     if input == 1 {
-        return (0, 0);
+        return Point(0, 0);
     }
     let shells = (1..)
-        .filter(|n| n % 2 == 1)
+        .filter(odd)
         .map(|n| n*n)
         .take_while(|&n| n < input)
         .collect::<Vec<u32>>();
-    let last_corner = shells.last().cloned().unwrap();
     let num_shells = shells.len() as i32;
+    let last_corner = shells.last().cloned().unwrap();
     let leg_length = (last_corner as f64).sqrt() as u32 + 2;
     let leg_middle = (((leg_length - 1) / 2) as i32).abs();
 
@@ -25,11 +52,11 @@ fn dist_vec(input: u32) -> (i32, i32) {
     let pos_on_leg = (rest % (leg_length - 1)) as i32; 
     let leg_offset = pos_on_leg - leg_middle;
     match which_leg {
-        0 => (num_shells, leg_offset),
-        1 => (-leg_offset, num_shells),
-        2 => (-num_shells, -leg_offset),
-        3 => (leg_offset, -num_shells),
-        4 => (num_shells, leg_offset),
+        0 => Point(num_shells, leg_offset),
+        1 => Point(-leg_offset, num_shells),
+        2 => Point(-num_shells, -leg_offset),
+        3 => Point(leg_offset, -num_shells),
+        4 => Point(num_shells, leg_offset), // bottom right corner
         _ => panic!("invalid leg")
     }
 }
@@ -37,19 +64,18 @@ fn dist_vec(input: u32) -> (i32, i32) {
 
 /// calculate manhatten distance from origin to cell "input"
 fn dist(input: u32) -> u32 {
-    let (a, b) = dist_vec(input);
+    let Point(a, b) = dist_vec(input);
     (a.abs() + b.abs()) as u32
 }
 
 
-// test if "v1" and "v2" are manhatten neighbors
-fn is_neighbor(v1: (i32, i32), v2: (i32, i32)) -> bool {
-    let diff = ((v1.0 - v2.0).abs(), 
-                  (v1.1 - v2.1).abs());
+/// test if "v1" and "v2" are manhatten neighbors
+fn is_neighbor(v1: &Point, v2: &Point) -> bool {
+    let diff = v1.minus(v2).abs();
     match diff {
-        (0, 1) => true,
-        (1, 0) => true,
-        (1, 1) => true,
+        Point(0, 1) => true,
+        Point(1, 0) => true,
+        Point(1, 1) => true,
         _ => false
     }
 }
@@ -61,7 +87,7 @@ fn is_neighbor(v1: (i32, i32), v2: (i32, i32)) -> bool {
 fn brute_neighbors(input: u32) -> Vec<u32> {
     let pos = dist_vec(input);
     (1..input)
-        .filter(|&n| is_neighbor(pos, dist_vec(n)))
+        .filter(|&n| is_neighbor(&pos, &dist_vec(n)))
         .collect::<Vec<_>>()
 }
 
@@ -98,7 +124,6 @@ mod tests {
     #[test]
     fn test1() {
         for &(target, steps) in [
-
             (1, 0),
             (12, 3),
             (23, 2),

@@ -2,8 +2,4 @@
 
 This is my project to learn programming rust from scratch using the http://adventofcode.com problems.
 
-### TODO
-- write proper tests
-- seperate solutions into separate files/modules
-- refactor out commonly used functions
-- add correct solution tests for regressions
+My intention is to write idiomatic, correct code; but please bear in mind that I have a cumulative experience of 1 day writing Rust code, so please beware ;)

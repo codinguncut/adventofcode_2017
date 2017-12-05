@@ -4,35 +4,38 @@ use std::iter::FromIterator;
 use itertools::Itertools;
 
 
-fn sort_string(s : String) -> String {
-    s
-    .chars()
-    .sorted()
-    .iter()
-    .collect::<String>()
+/// sort string by character to create unique char fingerprint
+fn sort_string(s : &str) -> String {
+    s.chars()
+        .sorted()
+        .iter()
+        .collect::<String>()
 }
 
 
-fn is_valid(password: String, is_part1 : bool) -> bool {
+/// check if given passphrase is valid
+/// # Arguments
+/// `is_part1` toggles between the two parts of the problem
+fn is_valid(password: &str, is_part1 : bool) -> bool {
     let words = password 
         .trim()
         .split_whitespace()
         .map(|x| x.to_string())
         .collect::<Vec<String>>();
-    let words_len = words.clone().len();
+    let words_len = words.len();
     let unique_words : HashSet<String> = HashSet::from_iter(
         words
         .iter()
         .cloned()
-        .map(|x| if is_part1 {x} else {sort_string(x)})
+        .map(|x| if is_part1 {x} else {sort_string(&x)})
     );
     words_len == unique_words.len()
 }
 
 
-fn worker(passwords: String, is_part1: bool) -> usize {
+fn worker(passwords: &str, is_part1: bool) -> usize {
     passwords.split('\n').map(|line| {
-        if is_valid(line.to_string(), is_part1) {1} else {0}
+        if is_valid(line, is_part1) {1} else {0}
     }).sum()
 }
 
@@ -40,8 +43,8 @@ fn worker(passwords: String, is_part1: bool) -> usize {
 #[allow(dead_code)]
 pub fn main() {
     let input = common::read_file("data/day4.txt");
-    println!("day 4 - 1 {}", worker(input.clone(), true));
-    println!("day 4 - 2 {}", worker(input, false));
+    println!("day 4 - 1 {}", worker(&input, true));
+    println!("day 4 - 2 {}", worker(&input, false));
 }
 
 
@@ -56,7 +59,7 @@ mod tests {
             ("aa bb cc dd aa", false),
             ("aa bb cc dd aaa", true)
         ].iter() {
-            assert_eq!(is_valid(sample.to_string(), true), valid);
+            assert_eq!(is_valid(sample, true), valid);
         }
     }
 
@@ -69,19 +72,19 @@ mod tests {
             ("iiii oiii ooii oooi oooo", true),
             ("oiii ioii iioi iiio", false)
         ].iter() {
-            assert_eq!(is_valid(sample.to_string(), false), valid);
+            assert_eq!(is_valid(sample, false), valid);
         }
     }
 
     #[test]
     fn solution1() {
         let input = common::read_file("data/day4.txt");
-        assert_eq!(worker(input.clone(), true), 337);
+        assert_eq!(worker(&input, true), 337);
     }
 
     #[test]
     fn solution2() {
         let input = common::read_file("data/day4.txt");
-        assert_eq!(worker(input.clone(), false), 231);
+        assert_eq!(worker(&input, false), 231);
     }
 }
