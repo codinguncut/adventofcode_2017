@@ -27,7 +27,7 @@ fn is_valid(password: &str, is_part1 : bool) -> bool {
         words
         .iter()
         .cloned()
-        .map(|x| if is_part1 {x} else {sort_string(&x)})
+        .map(|x| if is_part1 { x } else { sort_string(&x) })
     );
     words_len == unique_words.len()
 }
@@ -35,7 +35,7 @@ fn is_valid(password: &str, is_part1 : bool) -> bool {
 
 fn worker(passwords: &str, is_part1: bool) -> usize {
     passwords.lines().map(|line| {
-        if is_valid(line, is_part1) {1} else {0}
+        if is_valid(line, is_part1) { 1 } else { 0 }
     }).sum()
 }
 

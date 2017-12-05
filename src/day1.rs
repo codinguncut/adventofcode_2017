@@ -12,7 +12,7 @@ fn get_matching(s: &str, offset: usize) -> Vec<char> {
 
 
 // turn vector of characters into vector of (digit) numbers
-fn to_num(a: Vec<char>) -> Vec<u32> {
+fn to_num(a: &Vec<char>) -> Vec<u32> {
     a.iter()
         .map(|c| c.to_digit(10).unwrap())
         .collect::<Vec<_>>()
@@ -20,7 +20,7 @@ fn to_num(a: Vec<char>) -> Vec<u32> {
 
 
 fn worker(s: &str, offset: usize) -> u32 {
-    to_num(get_matching(s, offset))
+    to_num(&get_matching(s, offset))
         .iter()
         .sum()
 }

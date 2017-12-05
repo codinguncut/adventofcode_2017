@@ -42,7 +42,7 @@ fn run(state: &mut State, is_part1: bool) -> usize {
     let update : fn(i32) -> i32 = if is_part1 {
         |n| n + 1
     } else {
-        |n| if n >= 3 {n-1} else {n+1}
+        |n| if n >= 3 { n-1 } else { n+1 }
     };
     loop {
         match step(state, &update) {
@@ -100,7 +100,8 @@ mod tests {
             vec![2, 4, 0, 1, -2],
             vec![2, 5, 0, 1, -2],
         ];
-        assert!(results.zip(sequence.iter()).all(|(a, b)| a == *b));
+        assert!(
+            results.zip(sequence.iter()).all(|(a, b)| a == *b));
     }
 
     #[test]
