@@ -34,7 +34,7 @@ fn is_valid(password: &str, is_part1 : bool) -> bool {
 
 
 fn worker(passwords: &str, is_part1: bool) -> usize {
-    passwords.split('\n').map(|line| {
+    passwords.lines().map(|line| {
         if is_valid(line, is_part1) {1} else {0}
     }).sum()
 }

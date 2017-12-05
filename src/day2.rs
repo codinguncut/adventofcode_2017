@@ -4,7 +4,7 @@ use std;
 
 
 fn part1(input: &str) -> u32 {
-    input.split('\n').map(|line| {
+    input.lines().map(|line| {
         let (min, max) : (u32, u32) = line
             .split_whitespace()
             .map(|s| s.parse().unwrap())
@@ -21,22 +21,21 @@ fn part1(input: &str) -> u32 {
 
 
 fn part2(input: &str) -> u32 {
-    input.split('\n').map(|line| {
+    input.lines().map(|line| -> u32 {
         let nums = line
             .split_whitespace()
             .map(|s| s.parse().unwrap())
             .collect::<Vec<u32>>();
         // NOTE: assuming only one match per line
-        let res : u32 = nums.iter().tuple_combinations().map(|(&a, &b)| {
+        nums.iter().tuple_combinations().map(|(&a, &b)| {
             if a % b == 0 {
-                a / b as u32
+                a / b
             } else if b % a == 0 {
-                b / a as u32
+                b / a
             } else {
                 0
             }
-        }).sum();
-        res
+        }).sum()
     }).sum()
 }
 

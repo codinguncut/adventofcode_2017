@@ -1,7 +1,7 @@
 use common;
 
 // get matching characters in "s" that are "offset" apart
-fn get_same(s: &str, offset: usize) -> Vec<char> {
+fn get_matching(s: &str, offset: usize) -> Vec<char> {
     let t = [&s[offset..], &s[..offset]].join("");
     s.chars()
         .zip(t.chars())
@@ -20,7 +20,7 @@ fn to_num(a: Vec<char>) -> Vec<u32> {
 
 
 fn worker(s: &str, offset: usize) -> u32 {
-    to_num(get_same(s, offset))
+    to_num(get_matching(s, offset))
         .iter()
         .sum()
 }
