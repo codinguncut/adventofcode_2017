@@ -1,5 +1,9 @@
 use common;
 
+// TODO
+// - make "step" a method on `State`?
+// - can we do this with immutable data?
+
 /// struct maintaining "machine state"
 /// `instr` - vector of signed jump offsets
 /// `index` - current index into the `instr` table
@@ -65,12 +69,10 @@ pub fn main() {
     let mut state = read_state();
 
     // keep original to reset for second run
-    let state_copy = state.clone();
+    let mut state_copy = state.clone();
 
     println!("day 5 - 1: {}", run(&mut state, true));
-
-    let mut state = state_copy;
-    println!("day 5 - 2: {}", run(&mut state, false));
+    println!("day 5 - 2: {}", run(&mut state_copy, false));
 }
 
 
