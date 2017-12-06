@@ -58,7 +58,7 @@ fn iterate(banks: &mut Banks) -> Vec<String> {
 fn part2(banks: &mut Banks) -> usize {
     let vec = iterate(banks);
     let pos_last = vec.len() - 1;
-    let last = vec.iter().last().unwrap();
+    let last = &vec[pos_last];
     let first = vec.iter().position(|n| n == last).unwrap();
     pos_last - first
 }
