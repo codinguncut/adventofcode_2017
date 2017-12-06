@@ -1,4 +1,6 @@
+extern crate rpds;
 use common;
+//use rpds::Vector;
 
 // TODO
 // - make "step" a method on `State`?
@@ -24,16 +26,16 @@ struct State {
 /// # Returns
 /// `None` if step was successful
 /// `Some(usize)` if accessing element outside instructions
-fn step(state: &mut State, update: &Fn(i32) -> i32) -> Option<usize> {
+fn step(state: &mut State, update: &Fn(i32) -> i32) -> Result<(), usize> {
     let instr = &mut state.instr;
     let jmp : i32 = *match (&instr).get(state.index) {
       Some(x) => x,
-      _ => return Some(state.count)
+      _ => return Err(state.count)
     };
     instr[state.index] = update(jmp);
     state.index = (state.index as i32 + jmp) as usize;
     state.count += 1;
-    None
+    Ok(())
 }
 
 
@@ -46,7 +48,7 @@ fn run(state: &mut State, is_part1: bool) -> usize {
     };
     loop {
         match step(state, &update) {
-            Some(x) => return x,
+            Err(x) => return x,
             _ => continue
         }
     }
@@ -65,6 +67,7 @@ fn read_state() -> State {
 }
 
 
+#[allow(dead_code)]
 pub fn main() {
     let mut state = read_state();
 
@@ -89,7 +92,7 @@ mod tests {
 
         let results = (1..).map(|_| {
             match step(&mut state, &update) {
-                None => Some(state.instr.clone()),
+                Ok(_) => Some(state.instr.clone()),
                 _ => None
             }
         }).take_while(Option::is_some).map(|n| n.unwrap());
