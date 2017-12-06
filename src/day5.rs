@@ -26,7 +26,7 @@ struct State {
 /// # Returns
 /// `None` if step was successful
 /// `Some(usize)` if accessing element outside instructions
-fn step(state: &mut State, update: &Fn(i32) -> i32) -> Result<(), usize> {
+fn step(state: &mut State, update: &Fn(i32) -> i32) -> Result<usize, usize> {
     let instr = &mut state.instr;
     let jmp : i32 = *match (&instr).get(state.index) {
       Some(x) => x,
@@ -35,7 +35,7 @@ fn step(state: &mut State, update: &Fn(i32) -> i32) -> Result<(), usize> {
     instr[state.index] = update(jmp);
     state.index = (state.index as i32 + jmp) as usize;
     state.count += 1;
-    Ok(())
+    Ok(state.count)
 }
 
 

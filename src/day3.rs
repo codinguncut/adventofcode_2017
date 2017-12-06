@@ -16,12 +16,7 @@ impl Point {
 }
 
 
-#[allow(dead_code)]
-fn even(n: &u32) -> bool {
-    n % 2 == 0
-}
-
-
+// FIXME: u32::is_even
 fn odd(n: &u32) -> bool {
     n % 2 == 1
 }
@@ -37,13 +32,14 @@ fn dist_vec(input: u32) -> Point {
     if input == 1 {
         return Point(0, 0);
     }
-    let shells = (1..)
+    let shells : Vec<u32> = (1..)
+        // FIXME: step_by(2)?
         .filter(odd)
         .map(|n| n*n)
         .take_while(|&n| n < input)
-        .collect::<Vec<u32>>();
+        .collect();
     let num_shells = shells.len() as i32;
-    let last_corner = shells.last().cloned().unwrap();
+    let last_corner = shells[num_shells as usize - 1];
     let leg_length = (last_corner as f64).sqrt() as u32 + 2;
     let leg_middle = (((leg_length - 1) / 2) as i32).abs();
 
@@ -88,7 +84,7 @@ fn brute_neighbors(input: u32) -> Vec<u32> {
     let pos = dist_vec(input);
     (1..input)
         .filter(|&n| is_neighbor(&pos, &dist_vec(n)))
-        .collect::<Vec<_>>()
+        .collect()
 }
 
 
@@ -123,13 +119,13 @@ mod tests {
 
     #[test]
     fn test1() {
-        for &(target, steps) in [
+        for &(target, steps) in &[
             (1, 0),
             (12, 3),
             (23, 2),
             (21, 4),
             (1024, 31)
-        ].iter() {
+        ] {
             assert_eq!(dist(target), steps);
         }
     }

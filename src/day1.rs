@@ -7,7 +7,7 @@ fn get_matching(s: &str, offset: usize) -> Vec<char> {
         .zip(t.chars())
         .filter(|&(a, b)| a == b)
         .map(|(a, _)| a)
-        .collect::<Vec<_>>()
+        .collect()
 }
 
 
@@ -15,7 +15,7 @@ fn get_matching(s: &str, offset: usize) -> Vec<char> {
 fn to_num(a: &Vec<char>) -> Vec<u32> {
     a.iter()
         .map(|c| c.to_digit(10).unwrap())
-        .collect::<Vec<_>>()
+        .collect()
 }
 
 
@@ -41,25 +41,25 @@ mod tests {
 
     #[test]
     fn test1() {
-        for &(sample, valid) in [
+        for &(sample, valid) in &[
             ("1122", 3),
             ("1111", 4),
             ("1234", 0),
             ("91212129", 9)
-        ].iter() {
+        ] {
             assert_eq!(worker(sample, 1), valid);
         }
     }
 
     #[test]
     fn test2() {
-        for &(sample, valid) in [
+        for &(sample, valid) in &[
             ("1212", 6),
             ("1221", 0),
             ("123425", 4),
             ("123123", 12),
             ("12131415", 4),
-        ].iter() {
+        ] {
             let offset = sample.chars().count() / 2 as usize;
             assert_eq!(worker(sample, offset), valid);
         }

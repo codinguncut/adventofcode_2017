@@ -9,7 +9,7 @@ fn sort_string(s : &str) -> String {
     s.chars()
         .sorted()
         .iter()
-        .collect::<String>()
+        .collect()
 }
 
 
@@ -17,11 +17,11 @@ fn sort_string(s : &str) -> String {
 /// # Arguments
 /// `is_part1` toggles between the two parts of the problem
 fn is_valid(password: &str, is_part1 : bool) -> bool {
-    let words = password 
+    let words : Vec<String> = password 
         .trim()
         .split_whitespace()
         .map(|x| x.to_string())
-        .collect::<Vec<String>>();
+        .collect();
     let words_len = words.len();
     let unique_words : HashSet<String> = HashSet::from_iter(
         words
@@ -54,24 +54,24 @@ mod tests {
 
     #[test]
     fn part1() {
-        for &(sample, valid) in [
+        for &(sample, valid) in &[
             ("aa bb cc dd ee", true),
             ("aa bb cc dd aa", false),
             ("aa bb cc dd aaa", true)
-        ].iter() {
+        ] {
             assert_eq!(is_valid(sample, true), valid);
         }
     }
 
     #[test]
     fn part2() {
-        for &(sample, valid) in [
+        for &(sample, valid) in &[
             ("abcde fghij", true),
             ("abcde xyz ecdab", false),
             ("a ab abc abd abf abj", true),
             ("iiii oiii ooii oooi oooo", true),
             ("oiii ioii iioi iiio", false)
-        ].iter() {
+        ] {
             assert_eq!(is_valid(sample, false), valid);
         }
     }

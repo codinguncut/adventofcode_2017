@@ -6,6 +6,7 @@ type Banks = Vec<usize>;
 
 /// find index of largest element in `banks`
 fn find_largest(banks: &Banks) -> usize {
+    // FIXME: .position?
     banks.iter().enumerate().fold(None, |state, (i, n)| match state {
         None => Some((i, n)),
         Some((i_max, n_max)) =>
@@ -19,7 +20,7 @@ fn find_largest(banks: &Banks) -> usize {
 
 
 /// reallocate blocks in bank `which` to other banks
-fn reallocate(banks: &mut Banks, which: usize) -> &mut Banks {
+fn reallocate(banks: &mut Banks, which: usize) -> &Banks {
     let blocks = *banks.get(which).unwrap();
     banks[which] = 0;
     (0..blocks).foreach(|n| {

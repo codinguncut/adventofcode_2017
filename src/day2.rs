@@ -55,16 +55,16 @@ mod tests {
     #[test]
     fn test1() {
         let sample = "5 1 9 5
-    7 5 3
-    2 4 6 8";
+            7 5 3
+            2 4 6 8";
         assert_eq!(part1(sample), 18);
     }
 
     #[test]
     fn test2() {
         let sample2 = "5 9 2 8
-    9 4 7 3
-    3 8 6 5";
+            9 4 7 3
+            3 8 6 5";
         assert_eq!(part2(sample2), 9);
     }
 
