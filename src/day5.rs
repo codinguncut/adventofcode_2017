@@ -1,6 +1,4 @@
-extern crate rpds;
 use common;
-//use rpds::Vector;
 
 // TODO
 // - make "step" a method on `State`?
