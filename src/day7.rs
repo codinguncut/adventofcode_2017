@@ -1,9 +1,10 @@
 use common;
 use regex::Regex;
 use std::collections::HashSet;
+use std::collections::HashMap;
 
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 struct Program {
     name: String,
     weight: u32,
@@ -14,28 +15,23 @@ struct Program {
 /// parse single line using regular expressions
 fn parse_line(input: &str) -> Program {
     lazy_static! {
-        static ref RE : Regex = Regex::new(
-            r"^(\w+) \((\d+)\)").unwrap();
-        static ref RE_CHILDREN : Regex = Regex::new(
-            r"(\w+) \((\d+)\) -> ([\w, ]+)").unwrap();
+        static ref RE: Regex = Regex::new(
+            r"(?P<name>\w+) \((?P<weight>\d+)\)(?: -> (?P<children>[\w, ]+))?").unwrap();
     }
 
-    // FIXME: optional named group for children
-    if input.contains(" -> ") {
-        let cap = RE_CHILDREN.captures(input).unwrap();
-        let (name, weight, children) = (&cap[1], &cap[2], &cap[3]);
-        Program{name: name.to_string(),
-                weight: weight.parse().unwrap(),
-                children: children.split(", ").map(|n| n.to_string()).collect(),
-        }
-    } else {
-        let cap = RE.captures(input).unwrap();
-        let (name, weight) = (&cap[1], &cap[2]);
-        Program{name: name.to_string(),
-                weight: weight.parse().unwrap(),
-                children: vec![]
-        }
-    }
+    let cap = RE.captures(input).unwrap();
+    let (name, weight) = (cap.name("name").unwrap().as_str(),
+                          cap.name("weight").unwrap().as_str());
+    let children = match cap.name("children") {
+        Some(x) => x.as_str()
+            .split(", ")
+            .map(|n| n.to_string())
+            .collect(),
+        _ => vec![]
+    };
+    Program{name: name.to_string(),
+            weight: weight.parse().unwrap(),
+            children}
 }
 
 
@@ -69,10 +65,62 @@ fn find_root(input: &str) -> String {
 }
 
 
+fn check_weights(input: &str) -> (u32, u32) {
+    let programs = parse_lines(&input);
+    let mut weights : HashMap<&str, &Program> = HashMap::new();
+    for program in &programs {
+        weights.insert(&program.name, &program);
+    }
+
+
+    /// depth first iterator
+    fn dfs(node: &str, weights: &HashMap<&str, &Program>) -> Vec<Program> {
+        let program = weights
+            .get(node)
+            .unwrap();
+        let res = vec![(**program).clone()];
+        if program.children.len() > 0 {
+            let cs : Vec<Program> = program.children.iter().map(|child| {
+                dfs(child, &weights)
+            }).flat_map(|n| n).collect();
+            cs.iter().chain(res.iter()).cloned().collect()
+        } else {
+            res
+        }
+    }
+
+
+    // calculate child weights recursively
+    // FIXME: extremely unhappy with the println approach of this
+    // FIXME: need depth-first iterator instead
+    fn rec(node: &str, weights: &HashMap<&str, &Program>) -> (u32, u32) {
+        let program = weights
+            .get(node)
+            .unwrap();
+        if program.children.len() > 0 {
+            let child_weights : Vec<(u32, u32)> = program.children.iter().map(|child| {
+                rec(&child, &weights)
+            }).collect();
+            if !child_weights.iter().all(|&(_, n)| &child_weights[0].1 == &n) {
+                println!("imbalance {:?}", child_weights);
+            }
+            let accum : u32 = child_weights.iter().map(|a| a.1).sum();
+            (program.weight, program.weight + accum)
+        } else {
+            (program.weight, program.weight)
+        }
+    }
+
+    let root = find_root(&input);
+    rec(&root, &weights)
+}
+
+
 #[allow(dead_code)]
 pub fn main() {
     let input = common::read_file("data/day7.txt");
     println!("day 7 - 1: {}", find_root(&input));
+    check_weights(&input);
 }
 
 
