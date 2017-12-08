@@ -74,6 +74,7 @@ fn check_weights(input: &str) -> (u32, u32) {
 
 
     /// depth first iterator
+    #[allow(dead_code)]
     fn dfs(node: &str, weights: &HashMap<&str, &Program>) -> Vec<Program> {
         let program = weights
             .get(node)
