@@ -5,43 +5,60 @@ use std::collections::HashMap;
 type State = HashMap<String, i32>;
 type StateVec = Vec<(String, i32)>;
 
+
+/// find largest register value in StateVec
 fn find_largest(vec: &StateVec) -> i32 {
-    *vec.iter().map(|x| x.1).sorted().last().unwrap()
+    *vec.iter()
+        .map(|x| x.1)
+        .sorted()
+        .last()
+        .unwrap()
 }
 
+
+/// convert HashMap to StateVec for easier comparison/testing
 fn state_to_vec(state: &State) -> StateVec {
-    state.iter().map(|(s, n)| (s.to_string(), *n)).sorted()
+    state.iter()
+        // FIXME: better way?
+        .map(|(s, n)| (s.to_string(), *n))
+        .sorted()
 }
 
+
+/// FIXME: no State cloning
+/// perform single computation step
 fn single_step(input: &str, mut state: &mut State) -> State {
-    let parts : Vec<&str> = input.split_whitespace().collect();
+    let parts: Vec<&str> = input.split_whitespace().collect();
+    // FIXME: better way to destructure? collect tuple/array?
     let (reg1, op, ival1, cif, reg2, cmp, ival2) = (
         parts[0], parts[1], parts[2].parse().unwrap(), parts[3], parts[4], parts[5], 
         parts[6].parse().unwrap());
     assert_eq!(cif, "if");
 
+    // FIXME: mut closure over state
+    /// fetch value of register "reg", or 0
     fn fetch(reg: &str, state: &State) -> i32 {
       *state.get(reg).unwrap_or(&0)
     }
 
+    /// increment register "reg" by "val"
     fn inc(reg: &str, val: i32, state: &mut State) {
       *state.entry(reg.to_string()).or_insert(0) += val;
     }
 
-    let rv2 = fetch(reg2, &state);
-    // TODO: PartialEq::gt
-    let cond = match cmp {
-      ">" => rv2 > ival2,
-      "<" => rv2 < ival2,
-      ">=" => rv2 >= ival2,
-      "<=" => rv2 <= ival2,
-      "==" => rv2 == ival2,
-      "!=" => rv2 != ival2,
+    let cmp_op = match cmp {
+      ">" => i32::gt,
+      "<" => i32::lt,
+      ">=" => i32::ge,
+      "<=" => i32::le,
+      "==" => i32::eq,
+      "!=" => i32::ne,
       _ => panic!("unknown comparison operator"),
     };
 
-    if cond {
-      let to_add : i32 = match op {
+    let rv2 = fetch(reg2, &state);
+    if cmp_op(&rv2, &ival2) {
+      let to_add: i32 = match op {
         "inc" => ival1,
         "dec" => -ival1,
         _ => panic!("unknown inc/dec operator"),
@@ -51,6 +68,8 @@ fn single_step(input: &str, mut state: &mut State) -> State {
     state.clone()
 }
 
+
+/// run whole program of one or multiple instructions
 fn run_program(input: &str) -> StateVec {
     let mut state: State = HashMap::new();
     for line in input.lines() {
@@ -59,12 +78,13 @@ fn run_program(input: &str) -> StateVec {
     state.iter().map(|(s, n)| (s.to_string(), *n)).sorted()
 }
 
+
+/// part2 - find intermediate largest register value
 fn find_any_largest(input: &str) -> i32 {
     let mut state: State = HashMap::new();
     *input.lines().map(|line| {
         single_step(&line, &mut state);
-        let vec = state_to_vec(&state);
-        find_largest(&vec)
+        find_largest(&state_to_vec(&state))
     }).sorted().last().unwrap()
 }
 
